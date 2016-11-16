@@ -11,7 +11,7 @@ namespace Files
     {
         internal IEnumerable<string[]> ReadCsv1()
         {
-            using (var stream = new StreamReader("airquality.csv"))
+            using (var stream = new StreamReader(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName,"airquality.csv")))
             {
                 while (true)
                 {
