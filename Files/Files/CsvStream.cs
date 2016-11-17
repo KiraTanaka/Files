@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -12,9 +13,9 @@ namespace Files
 {
     internal class CsvStream
     {
-        internal IEnumerable<string[]> ReadCsv1()
+        internal IEnumerable<string[]> ReadCsv1(string path)
         {
-            using (var stream = new StreamReader(Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "airquality.csv")))
+            using (var stream = new StreamReader(path))
             {
                 while (true)
                 {
@@ -26,18 +27,15 @@ namespace Files
                     }
                     yield return lineValues.Split(',').ToList().Select(x =>
                     {
-                        x = (x == "NA") ? null : x;
-                        return x;
+                        return (x == "NA") ? null : x.Replace("\"", "");
                     }).ToArray();
                 }
             }
         }
-        internal IEnumerable<T> ReadCsv2<T>() where T : IMeasurement, new()
+        internal IEnumerable<T> ReadCsv2<T>(string path) where T : IMeasurement, new()
         {
-            List<string[]> data = ReadCsv1().ToList();
-            Dictionary<string, int> head = new Dictionary<string, int>();
-            int index = 0;
-            data.First().ToList().ForEach(value => head.Add(value, index++));
+            List<string[]> data = ReadCsv1(path).ToList();
+            Dictionary<string, int> head = GetHeader(data);
             data.RemoveAt(0);
             foreach (var line in data)
             {
@@ -46,30 +44,44 @@ namespace Files
                 yield return objectT;
             }
         }
-        internal IEnumerable<Dictionary<string, object>> ReadCsv3()
-        {
-            /*Сделайте метод ReadCsv3 (без generic-параметра), 
-             * который бы возвращал ленивое перечисление Dictionary<string,object>. 
-             * Каждый такой Dictionary будет состоять из пар (name,value), где name - имя 
-             * соответствующего поля, а value - его значение после конвертации в int, double или string.
-             *  NA следует конвертировать в null.*/
-            int index = 0;
-            List<string[]> data = ReadCsv1().ToList();
+        internal IEnumerable<Dictionary<string, object>> ReadCsv3(string path)
+        {           
+            List<string[]> data = ReadCsv1(path).ToList();
             List<string> head = new List<string>();
             head = data.First().ToList();
             data.RemoveAt(0);
             foreach (var line in data)
             {
+                int index = 0;
                 Dictionary<string, object> dictionary = new Dictionary<string, object>();
                 dictionary.Add(head[index], line[index++]);
-                dictionary.Add(head[index], int.Parse(line[index++]));
-                dictionary.Add(head[index], int.Parse(line[index++]));
-                dictionary.Add(head[index], double.Parse(line[index++]));
-                dictionary.Add(head[index], int.Parse(line[index++]));
+                dictionary.Add(head[index], int.Parse(line[index++] ?? "0"));
+                dictionary.Add(head[index], int.Parse(line[index++] ?? "0"));
+                dictionary.Add(head[index], double.Parse(line[index++] ?? "0", CultureInfo.InvariantCulture));
+                dictionary.Add(head[index], int.Parse(line[index++] ?? "0"));
                 dictionary.Add(head[index], int.Parse(line[index++]));
                 dictionary.Add(head[index], int.Parse(line[index++]));
                 yield return dictionary;
             }
+        }
+        internal IEnumerable<dynamic> ReadCsv4(string path)
+        {
+            List<string[]> data = ReadCsv1(path).ToList();
+            Dictionary<string, int> head = GetHeader(data);
+            data.RemoveAt(0);
+            foreach (var line in data)
+            {
+                dynamic dynamicObject = new DynamicMeasurement();
+                dynamicObject.SetAttribute(head, line);
+                yield return dynamicObject;
+            }
+        }
+        private Dictionary<string, int> GetHeader(List<string[]> data)
+        {
+            Dictionary<string, int> head = new Dictionary<string, int>();
+            int index = 0;
+            data.First().ToList().ForEach(value => head.Add(value, index++));
+            return head;
         }
     }
 }

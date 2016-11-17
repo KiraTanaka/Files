@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,10 +24,10 @@ namespace Files
         public void SetAttribute(Dictionary<string, int> header, string[] line)
         {
             Name = line[header["Name"]];
-            Ozone = int.Parse(line[header["Ozone"]]);
-            Solar = int.Parse(line[header["Solar.R"]]);
-            Wind = double.Parse(line[header["Wind"]]);
-            Temp = int.Parse(line[header["Temp"]]);
+            Ozone = int.Parse(line[header["Ozone"]]??"0");
+            Solar = int.Parse(line[header["Solar.R"]] ?? "0");
+            Wind = double.Parse(line[header["Wind"]] ?? "0", CultureInfo.InvariantCulture);
+            Temp = int.Parse(line[header["Temp"]] ?? "0");
             Month = int.Parse(line[header["Month"]]);
             Day = int.Parse(line[header["Day"]]);
         }

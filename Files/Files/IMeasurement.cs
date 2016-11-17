@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Files
 {
-    interface IMeasurement
+    public interface IMeasurement
     {
         void SetAttribute(Dictionary<string, int> header, string[] line);
     }
