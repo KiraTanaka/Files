@@ -2,8 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Files
 {
@@ -29,6 +32,21 @@ namespace Files
                 }
             }      
         }
-
+        internal IEnumerable<T> ReadCsv2<T>() where T : IMeasurement, new()
+        {
+            List<string[]> data = ReadCsv1().ToList();
+            Dictionary<string, int> head = new Dictionary<string, int>();
+            int index = 0;
+            data.First().ToList().ForEach(
+                value => { head.Add(value, index); }
+                );
+            data.RemoveAt(0);
+            foreach (var line in data)
+            {
+                T objectT = new T();
+                objectT.SetAttribute(head, line);
+                yield return objectT;
+            }
+        }
     }
 }

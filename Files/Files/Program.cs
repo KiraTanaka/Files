@@ -13,7 +13,8 @@ namespace Files
         static void Main(string[] args)
         {
             CsvStream stream = new CsvStream();
-            List<string[]> list=stream.ReadCsv1().ToList();            
+            //List<string[]> list=stream.ReadCsv1().ToList();
+            stream.ReadCsv2<Measurementt>();            
         }
     }
 }

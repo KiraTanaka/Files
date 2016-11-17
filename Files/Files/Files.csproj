@@ -35,6 +35,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -44,6 +45,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CsvStream.cs" />
+    <Compile Include="CsvType.cs" />
+    <Compile Include="Measurement.cs" />
+    <Compile Include="MeasurementAttribute.cs" />
     <Compile Include="Program.cs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
