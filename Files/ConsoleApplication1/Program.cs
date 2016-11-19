@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Files
+namespace ConsoleApplication1
 {
     class Program
     {
@@ -14,7 +15,7 @@ namespace Files
         {
             string path = Path.Combine(Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName, "airquality.csv");
             CsvStream stream = new CsvStream();
-            var windValues = stream.ReadCsv4(path).Where(z=>z.Ozone>10).Select(z=>z.Wind);
+            var data = stream.ReadCsv1(path);
             Console.ReadLine();
         }
     }
